@@ -1,6 +1,5 @@
 const fs = require("fs");
 
-// Read the file synchronously (or use async methods)
 const rawData = fs.readFileSync("input.txt", "utf-8");
 
 //PART 1
