@@ -3,6 +3,8 @@ const fs = require("fs");
 // Read the file synchronously (or use async methods)
 const rawData = fs.readFileSync("input.txt", "utf-8");
 
+//PART 1
+
 const leftList = [];
 const rightList = [];
 
@@ -30,6 +32,15 @@ for (let i = 0; i < leftList.length; i++) {
   totalDistance += difference;
 }
 
-console.log(totalDistance);
+//PART 2
 
-//30000062 too high
+let similarityScore = 0;
+
+for (let i = 0; i < leftList.length; i++) {
+  let appearancesInRightList = rightList.filter((num) => num === leftList[i]);
+  console.log(appearancesInRightList);
+
+  similarityScore += appearancesInRightList.length * leftList[i];
+}
+
+console.log(similarityScore);
