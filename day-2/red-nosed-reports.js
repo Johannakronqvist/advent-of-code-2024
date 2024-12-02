@@ -3,6 +3,8 @@ const fs = require("fs");
 const rawData = fs.readFileSync("input.txt", "utf-8");
 
 //PART 1
+
+// Split rawData into arrays of numbers
 let reports = rawData
   .trim()
   .split("\n")
