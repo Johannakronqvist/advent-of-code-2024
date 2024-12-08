@@ -104,4 +104,4 @@ function sumOfMiddlePages(pageRows) {
   return sumOfMiddlePageNumbers;
 }
 
-console.log("Has incorret order sum", sumOfMiddlePages(sortedRows));
+console.log(sumOfMiddlePages(sortedRows));
