@@ -25,7 +25,6 @@ let currentDirection;
 let guardPositionRow;
 let guardPositionCol;
 
-// Find the guard's starting position and direction
 for (let i = 0; i < guardPathData.length; i++) {
   for (let j = 0; j < guardPathData[i].length; j++) {
     if ("^v<>".includes(guardPathData[i][j])) {
@@ -38,7 +37,6 @@ for (let i = 0; i < guardPathData.length; i++) {
   if (currentDirection) break;
 }
 
-// Function to check if a position is within bounds
 function isValidPosition(row, col) {
   return (
     row >= 0 &&
@@ -48,7 +46,18 @@ function isValidPosition(row, col) {
   );
 }
 
-// Function to calculate the next step
+let haveBeenHere = [[guardPositionRow, guardPositionCol]];
+
+function hasBeenVisited(row, col) {
+  let checkIfVisited = haveBeenHere.some((position) => {
+    return position[0] === row && position[1] === col;
+  });
+  console.log("check if visited", checkIfVisited);
+  return checkIfVisited;
+}
+
+let stepCounter = 1;
+
 function checkNextStep() {
   let newRow = guardPositionRow + directionRow[currentDirection];
   let newCol = guardPositionCol + directionCol[currentDirection];
@@ -57,24 +66,29 @@ function checkNextStep() {
     const potentialNextStep = guardPathData[newRow][newCol];
 
     if (potentialNextStep === "#") {
-      // Stop movement and turn without changing position
       console.log("Guard encountered '#', turning 90 degrees.");
       turn90Degrees();
-    } else {
-      // Move to the new position
-      nextStep = potentialNextStep;
+    }
+
+    if (potentialNextStep !== "#") {
+      const alreadyVisited = hasBeenVisited(newRow, newCol);
       guardPositionRow = newRow;
       guardPositionCol = newCol;
-      return true; // Indicates the guard moved
+
+      if (!alreadyVisited) {
+        haveBeenHere.push([guardPositionRow, guardPositionCol]);
+        stepCounter++; // increment here for new positions
+      }
+
+      return true;
     }
   } else {
     console.log("Guard reached the edge of the grid.");
-    nextStep = "-"; // Indicate end of movement
+    nextStep = "-";
   }
-  return false; // Indicates no movement
+  return false;
 }
 
-// Function to turn the guard 90 degrees clockwise
 function turn90Degrees() {
   switch (currentDirection) {
     case "^":
@@ -92,25 +106,18 @@ function turn90Degrees() {
   }
 }
 
-// Initialize step counter and nextStep
-let stepCounter = 0;
 let nextStep = guardPathData[guardPositionRow][guardPositionCol];
 
 function move() {
   while (nextStep !== "#" && nextStep !== "-") {
-    const moved = checkNextStep();
-    if (moved) {
-      stepCounter++; // Only increment if the guard moved
-    }
-    if (nextStep === "-") break; // Stop if out of bounds
+    checkNextStep();
+
+    if (nextStep === "-") break;
   }
 }
 
-// Outer loop: Continue until the guard reaches the edge
 while (nextStep !== "-") {
   move();
 }
 
 console.log("Final Step Counter:", stepCounter);
-
-//6226, 6223, 5802
