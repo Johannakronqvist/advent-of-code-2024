@@ -1,130 +1,72 @@
 const fs = require("fs");
 
+// Read and parse the input
 const rawData = fs.readFileSync("input.txt", "utf-8");
+const reports = rawData
+  .trim()
+  .split(/\r?\n/)
+  .map((line) => line.split(""));
 
-const reports = rawData.trim().split(/\r?\n/).map((line) => {
-    return line.split('')
-});
+let xmasCounter = 0;
 
-let xmasCounter = 0; 
+// All 8 possible directions (x, y): right, left, down, up, diagonal directions
+const directions = [
+  [0, 1], // Right
+  [0, -1], // Left
+  [1, 0], // Down
+  [-1, 0], // Up
+  [1, 1], // Diagonal Down-Right
+  [1, -1], // Diagonal Down-Left
+  [-1, 1], // Diagonal Up-Right
+  [-1, -1], // Diagonal Up-Left
+];
+
+// Check if "XMAS" exists starting from (row, col) in a given direction
+function checkDirection(data, row, col, dirX, dirY) {
+  const target = "XMAS";
+  const rows = data.length;
+  const cols = data[0].length;
+
+  for (let k = 0; k < target.length; k++) {
+    const newRow = row + k * dirX;
+    const newCol = col + k * dirY;
+
+    // Check bounds and character match
+    if (
+      newRow < 0 ||
+      newRow >= rows ||
+      newCol < 0 ||
+      newCol >= cols ||
+      data[newRow][newCol] !== target[k]
+    ) {
+      return false;
+    }
+  }
+  return true;
+}
 
 function findXmas(data) {
-    data.forEach((list, index) => {
-        for(let i = 0; i < list.length; i++) {
-            if(list[i] === "X") {
-                checkForXmas(data, index, i)
-            }
-        }
-    });
-}
+  const rows = data.length;
+  const cols = data[0].length;
 
-function checkForXmas(data, arr, pos) {
-   leftToright(data, arr, pos)
-   rightToLeft(data, arr, pos)
-   diagonal(data, arr, pos)
-   diagonalBackW(data, arr, pos)
-   diagonalUpwards(data, arr, pos)
-   diagonalUpwardsBackw(data, arr, pos)
-   upToDown(data, arr, pos)
-   downToUp(data, arr, pos)
-}
-
-function leftToright(data, array, position) {
-    if (position + 3 < data[array].length) {
-        const M = data[array][position + 1];
-        const A = data[array][position + 2];
-        const S = data[array][position + 3];
-        if (M === 'M' && A === 'A' && S === 'S') {
-            xmasCounter += 1;
-            console.log(`Left to Right XMAS found at (${array},${position})`);
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      // Check for "X" as the starting character
+      if (data[row][col] === "X") {
+        // Test all directions
+        for (const [dirX, dirY] of directions) {
+          if (checkDirection(data, row, col, dirX, dirY)) {
+            xmasCounter++;
+            console.log(
+              `XMAS found at (${row}, ${col}) in direction (${dirX}, ${dirY})`
+            );
+          }
         }
+      }
     }
+  }
 }
 
-function rightToLeft(data, array, position) {
-    if (position - 3 >= 0) {
-        const M = data[array][position - 1];
-        const A = data[array][position - 2];
-        const S = data[array][position - 3];
-        if (M === 'M' && A === 'A' && S === 'S') {
-            xmasCounter += 1;
-            console.log(`Right to Left XMAS found at (${array},${position})`);
-        }
-    }
-}
-
-function upToDown(data, array, position) {
-    if (array + 3 < data.length) {
-        const M = data[array + 1][position];
-        const A = data[array + 2][position];
-        const S = data[array + 3][position];
-        if (M === 'M' && A === 'A' && S === 'S') {
-            xmasCounter += 1;
-            console.log(`Up to Down XMAS found at (${array},${position})`);
-        }
-    }
-}
-
-function downToUp(data, array, position) {
-    if (array - 3 >= 0) { 
-        const M = data[array - 1][position];
-        const A = data[array - 2][position];
-        const S = data[array - 3][position];
-        if (M === 'M' && A === 'A' && S === 'S') {
-            xmasCounter += 1;
-            console.log(`Down to Up XMAS found at (${array},${position})`);
-        }
-    }
-}
-
-function diagonal(data, array, position) {
-    if (array + 3 < data.length && position + 3 < data[array].length) {
-        const M = data[array + 1][position + 1];
-        const A = data[array + 2][position + 2];
-        const S = data[array + 3][position + 3];
-        if (M === 'M' && A === 'A' && S === 'S') {
-            xmasCounter += 1;
-            console.log(`Diagonal Down-Right XMAS found at (${array},${position})`);
-        }
-    }
-}
-
-function diagonalBackW(data, array, position) {
-    if (array + 3 < data.length && position - 3 >= 0) {
-        const M = data[array + 1][position - 1];
-        const A = data[array + 2][position - 2];
-        const S = data[array + 3][position - 3];
-        if (M === 'M' && A === 'A' && S === 'S') {
-            xmasCounter += 1;
-            console.log(`Diagonal Down-Left XMAS found at (${array},${position})`);
-        }
-    }
-}
-
-function diagonalUpwardsBackw(data, array, position) {
-    if (array - 3 >= 0 && position - 3 >= 0) {
-        const M = data[array - 1][position - 1];
-        const A = data[array - 2][position - 2];
-        const S = data[array - 3][position - 3];
-        if (M === 'M' && A === 'A' && S === 'S') {
-            xmasCounter += 1;
-            console.log(`Diagonal Up-Left XMAS found at (${array},${position})`);
-        }
-    }
-}
-
-function diagonalUpwards(data, array, position) {
-    if (array - 3 >= 0 && position + 3 < data[array].length) {
-        const M = data[array - 1][position + 1];
-        const A = data[array - 2][position + 2];
-        const S = data[array - 3][position + 3];
-        if (M === 'M' && A === 'A' && S === 'S') {
-            xmasCounter += 1;
-            console.log(`Diagonal Up-Right XMAS found at (${array},${position})`);
-        }
-    }
-}
-
+// Execute the search
 findXmas(reports);
 console.log(`Total XMAS patterns found: ${xmasCounter}`);
-
