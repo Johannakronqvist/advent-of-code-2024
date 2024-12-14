@@ -38,6 +38,9 @@ function bridgeRepair(nums) {
     return true;
   }
 
+  let concatination = concatenate(nums[0], nums[1]);
+  bridgeRepair([concatination, ...nums.slice(2)]);
+
   let addition = nums[0] + nums[1];
   bridgeRepair([addition, ...nums.slice(2)]);
 
@@ -45,3 +48,16 @@ function bridgeRepair(nums) {
   bridgeRepair([multiplication, ...nums.slice(2)]);
   //}
 }
+
+function concatenate(a, b) {
+  // Convert numbers to strings
+  let parsedNum1 = a.toString();
+  let parsedNum2 = b.toString();
+
+  // Concatenate the strings and parse the result as an integer
+  let concatenatedNum = parseInt(parsedNum1 + parsedNum2);
+
+  return concatenatedNum;
+}
+
+//275791737999003
