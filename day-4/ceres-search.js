@@ -8,65 +8,65 @@ const reports = rawData
   .map((line) => line.split(""));
 
 let xmasCounter = 0;
+let row = 1;
+let col = 1;
 
-// All 8 possible directions (x, y): right, left, down, up, diagonal directions
-const directions = [
-  [0, 1], // Right
-  [0, -1], // Left
-  [1, 0], // Down
-  [-1, 0], // Up
-  [1, 1], // Diagonal Down-Right
-  [1, -1], // Diagonal Down-Left
-  [-1, 1], // Diagonal Up-Right
-  [-1, -1], // Diagonal Up-Left
-];
+//console.log(reports[directions.downLeftCol][directions.downLeftRow]);
 
-// Check if "XMAS" exists starting from (row, col) in a given direction
-function checkDirection(data, row, col, dirX, dirY) {
-  const target = "XMAS";
-  const rows = data.length;
-  const cols = data[0].length;
+//Check if positions in possible directions can form "MAS"
+function checkMas1() {
+  let upRight = reports[row - 1][col + 1];
+  let downLeft = reports[row + 1][col - 1];
 
-  for (let k = 0; k < target.length; k++) {
-    const newRow = row + k * dirX;
-    const newCol = col + k * dirY;
+  console.log("upRight", upRight);
+  console.log("downLeft", downLeft);
 
-    // Check bounds and character match
-    if (
-      newRow < 0 ||
-      newRow >= rows ||
-      newCol < 0 ||
-      newCol >= cols ||
-      data[newRow][newCol] !== target[k]
-    ) {
-      return false;
+  if (upRight === "M") {
+    console.log("upRight is M");
+    if (downLeft === "S") {
+      console.log("downLeft is S");
+      checkMas2();
     }
-  }
-  return true;
-}
-
-function findXmas(data) {
-  const rows = data.length;
-  const cols = data[0].length;
-
-  for (let row = 0; row < rows; row++) {
-    for (let col = 0; col < cols; col++) {
-      // Check for "X" as the starting character
-      if (data[row][col] === "X") {
-        // Test all directions
-        for (const [dirX, dirY] of directions) {
-          if (checkDirection(data, row, col, dirX, dirY)) {
-            xmasCounter++;
-            console.log(
-              `XMAS found at (${row}, ${col}) in direction (${dirX}, ${dirY})`
-            );
-          }
-        }
-      }
+  } else if (upRight === "S") {
+    console.log("upRight is S");
+    if (downLeft === "M") {
+      console.log("downLeft is M");
+      checkMas2();
     }
   }
 }
 
-// Execute the search
-findXmas(reports);
+function checkMas2() {
+  console.log('IN "checkMas2"');
+
+  let upLeft = reports[row - 1][col - 1];
+  let downRight = reports[row + 1][col + 1];
+
+  if (upLeft === "M") {
+    if (downRight === "S") {
+      xmasCounter += 1;
+    }
+  } else if (upLeft === "S") {
+    if (downRight === "M") {
+      xmasCounter += 1;
+    }
+  }
+}
+
+// Check if "MAS" exists starting from (row, col) in a given direction
+function findXmas() {
+  for (let i = 1; i < reports.length - 1; i += 1) {
+    let report = reports[i];
+    for (let j = 1; j < report.length - 1; j += 1) {
+      let char = report[j];
+      char === "A" ? checkMas1() : null;
+      //Set current col in "Row"
+      col += 1;
+    }
+    col = 1;
+    row += 1; //Set current row in "Reports"
+  }
+}
+
+findXmas();
 console.log(`Total XMAS patterns found: ${xmasCounter}`);
